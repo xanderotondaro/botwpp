@@ -5,34 +5,271 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CPA ALEXANDRE</title>
 <style>
-  /* Reset e estilo do painel */
-  * { box-sizing: border-box; margin:0; padding:0; }
-  body { font-family:'Segoe UI', Tahoma, Geneva, Verdana,sans-serif; background:#0d1117; color:#e5e7eb; line-height:1.5; }
-  header { background:linear-gradient(90deg,#1f2937,#111827); padding:18px 30px; display:flex; justify-content:space-between; align-items:center; font-size:1.5rem; font-weight:600; box-shadow:0 4px 12px rgba(0,0,0,0.6); border-bottom:1px solid #1f2937; }
-  .buttons { margin:25px 0; display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
-  button { padding:10px 18px; border:none; border-radius:10px; cursor:pointer; background:linear-gradient(145deg,#1e293b,#111827); color:#e5e7eb; font-weight:500; transition: all 0.3s ease; box-shadow:0 3px 6px rgba(0,0,0,0.4); }
-  button:hover { opacity:0.85; }
-  button.active { background:#2563eb; box-shadow:0 6px 12px rgba(37,99,235,0.5); }
-  #backBtn { display:none; }
-  #cardsContainer { max-height:70vh; overflow-y:auto; padding-right:5px; }
-  #cardsContainer::-webkit-scrollbar { width:6px; }
-  #cardsContainer::-webkit-scrollbar-thumb { background:#3b82f6; border-radius:3px; }
-  .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:18px; }
-  .card { background:#111827; padding:20px; border-radius:14px; box-shadow:0 4px 16px rgba(0,0,0,0.6); cursor:pointer; transition: transform 0.3s, box-shadow 0.3s, opacity 0.3s; opacity:0; }
-  .card.show { opacity:1; }
-  .card:hover { transform:scale(1.04); box-shadow:0 8px 20px rgba(59,130,246,0.5); }
-  .status-text { font-weight:600; }
-  .card.status-pendente { border-left:5px solid #f59e0b; }
-  .card.status-confirmado { border-left:5px solid #3b82f6; }
-  .card.status-finalizado { border-left:5px solid #10b981; }
-  button.status-pendente { background:#f59e0b; color:white; }
-  button.status-confirmado { background:#3b82f6; color:white; }
-  button.status-finalizado { background:#10b981; color:white; }
-  .buttons input#searchInput { min-width:200px; padding:10px 12px; border-radius:8px; border:none; outline:none; background:#2b2b3c; color:white; }
+/* RESET */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-main: #070b12;
+  --bg-card: #0d1422;
+  --bg-header: linear-gradient(90deg,#0f172a,#020617);
+  --neon-blue: #3b82f6;
+  --neon-gold: #facc15;
+  --neon-green: #22c55e;
+  --neon-red: #ef4444;
+  --text-main: #e5e7eb;
+  --text-muted: #9ca3af;
+}
+
+/* BODY */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background:
+    radial-gradient(circle at top, rgba(250,204,21,0.06), transparent 40%),
+    radial-gradient(circle at bottom, rgba(59,130,246,0.08), transparent 40%),
+    var(--bg-main);
+  color: var(--text-main);
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* HEADER */
+header {
+  background: var(--bg-header);
+  padding: 18px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.8);
+  border-bottom: 1px solid rgba(250,204,21,0.2);
+}
+
+header span, header h1 {
+  color: var(--neon-gold);
+  text-shadow: 0 0 12px rgba(250,204,21,0.4);
+}
+
+/* BUTTONS */
+.buttons {
+  margin: 10px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+button {
+  padding: 5px 9px;
+  border: 1px solid rgba(250,204,21,0.25);
+  border-radius: 15px;
+  cursor: pointer;
+  background: linear-gradient(145deg,#0b1220,#020617);
+  color: var(--text-main);
+  font-weight: 600;
+  letter-spacing: .3px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.7);
+  position: relative;
+  overflow: hidden;
+}
+
+button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent, rgba(250,204,21,0.15), transparent);
+  opacity: 0;
+  transition: opacity .3s;
+}
+
+button:hover::after {
+  opacity: 1;
+}
+
+button:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(250,204,21,0.25);
+}
+
+button.active {
+  background: linear-gradient(145deg,#facc15,#ca8a04);
+  color: #1c1917;
+  border: none;
+  box-shadow: 0 0 18px rgba(250,204,21,0.6);
+}
+
+/* SEARCH */
+.buttons input#searchInput {
+  min-width: 100px;
+  padding: 5px 7px;
+  border-radius: 10px;
+  border: 1px solid rgba(250,204,21,0.25);
+  outline: none;
+  background: #020617;
+  color: var(--text-main);
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+}
+
+.buttons input#searchInput:focus {
+  border-color: var(--neon-gold);
+  box-shadow: 0 0 12px rgba(250,204,21,0.4);
+}
+
+/* CONTAINER */
+#backBtn {
+  display: none;
+}
+
+#cardsContainer {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 10px;
+  scroll-behavior: smooth;
+}
+
+#cardsContainer::-webkit-scrollbar {
+  width: 10px;
+}
+
+#cardsContainer::-webkit-scrollbar-track {
+  background: #020617;
+}
+
+#cardsContainer::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg,#facc15,#3b82f6);
+  border-radius: 10px;
+}
+
+/* GRID */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(260px,1fr));
+  gap: 20px;
+}
+
+/* CARD */
+.card {
+  background: linear-gradient(160deg,#0b1220,#020617);
+  padding: 20px;
+  border-radius: 18px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.8);
+  cursor: pointer;
+  transition: transform .3s, box-shadow .3s, opacity .4s;
+  opacity: 0;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(250,204,21,0.15);
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(250,204,21,0.12), transparent 45%);
+  pointer-events: none;
+}
+
+.card.show {
+  opacity: 1;
+}
+
+.card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 20px 40px rgba(250,204,21,0.25);
+}
+
+/* STATUS */
+.status-text {
+  font-weight: 700;
+  letter-spacing: .4px;
+}
+.status-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding: 5px 22px 5px 8px;
+  border-radius: 14px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  cursor: pointer;
+  outline: none;
+  border: 1px solid rgba(250,204,21,.35);
+  background:
+    linear-gradient(145deg,#0b1220,#020617);
+  color: var(--text-main);
+  box-shadow:
+    inset 0 0 10px rgba(0,0,0,.8),
+    0 0 14px rgba(250,204,21,.25);
+  transition: all .25s ease;
+}
+
+/* seta custom dourada */
+.status-select {
+  background-image:
+    linear-gradient(145deg,#0b1220,#020617),
+    url("data:image/svg+xml;utf8,<svg fill='gold' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: 0 0, right 14px center;
+  background-size: 100%, 18px;
+}
+
+/* hover / focus */
+.status-select:hover {
+  transform: scale(1.05);
+  box-shadow:
+    0 0 18px rgba(250,204,21,.5),
+    inset 0 0 12px rgba(0,0,0,.9);
+}
+
+.status-select:focus {
+  border-color: var(--neon-gold);
+  box-shadow: 0 0 22px rgba(250,204,21,.7);
+}
+
+/* cores por status */
+.status-select.pendente {
+  color: #fde68a;
+  border-color: var(--neon-gold);
+  box-shadow: 0 0 16px rgba(250,204,21,.45);
+}
+
+.status-select.confirmado {
+  color: #bfdbfe;
+  border-color: var(--neon-blue);
+  box-shadow: 0 0 16px rgba(59,130,246,.5);
+}
+
+.status-select.finalizado {
+  color: #bbf7d0;
+  border-color: var(--neon-green);
+  box-shadow: 0 0 16px rgba(34,197,94,.5);
+}
+
+/* RESPONSIVO */
+@media (max-width: 600px) {
+  header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .buttons {
+    justify-content: center;
+  }
+  
+  
+}
 </style>
 </head>
 <body>
-
+  
 <header>
   <div>📊 CPA ALEXANDRE</div>
   <button onclick="logout()" style="background:#ef4444;">Sair</button>
@@ -165,33 +402,47 @@ function criarNovoRegistro(){
 // --- FUNÇÕES AUXILIARES ---
 function renderCards(list){
   cardsContainer.innerHTML="";
+
   list.forEach((r,idx)=>{
     const div=document.createElement("div");
     div.className="card status-"+r.status.toLowerCase();
     div.id="registro-"+r.id;
     div.onclick=()=> abrirDetalhes(r.id);
-    const lucroTotal = (r.planilha || []).reduce((sum, l) => sum + ((l.saque || 0) - (l.deposito || 0)), 0);
+
+    const lucroTotal = (r.planilha || [])
+      .reduce((sum, l) => sum + ((l.saque || 0) - (l.deposito || 0)), 0);
+
+    const statusLower = r.status.toLowerCase();
 
     div.innerHTML=`
       <b>Nome:</b> ${r.nome}<br>
       <b>Número:</b> ${r.numero}<br>
       <b>Status:</b> <span class='status-text'>${r.status}</span><br>
       <b>Data:</b> ${new Date(r.data).toLocaleString("pt-BR")}<br><br>
+
       <b>Lucro Total:</b> ${lucroTotal}<br><br>
-      <select id='select-${r.id}' class="status-${r.status.toLowerCase()}" onclick='event.stopPropagation()'>
-        <option value='PENDENTE' ${r.status==='PENDENTE'?'selected':''}>PENDENTE</option>
-        <option value='CONFIRMADO' ${r.status==='CONFIRMADO'?'selected':''}>CONFIRMADO</option>
-        <option value='FINALIZADO' ${r.status==='FINALIZADO'?'selected':''}>FINALIZADO</option>
+
+      <select class="status-select ${statusLower}"
+        data-id="${r.id}"
+        onclick="event.stopPropagation()">
+        <option value="PENDENTE" ${r.status==="PENDENTE"?"selected":""}>🕒 PENDENTE</option>
+        <option value="CONFIRMADO" ${r.status==="CONFIRMADO"?"selected":""}>✅ CONFIRMADO</option>
+        <option value="FINALIZADO" ${r.status==="FINALIZADO"?"selected":""}>🏁 FINALIZADO</option>
       </select>
 
-      <button class="status-${r.status.toLowerCase()}" onclick='event.stopPropagation(); salvarStatus(${r.id})'>💾 Salvar</button>
-      <button onclick='event.stopPropagation(); apagarRegistro(${r.id})' style='background:#dc2626;'>🗑</button>
-      <button onclick='event.stopPropagation(); notificar(${r.id})'>🔔 Notificar</button>
-      
-      <button class="status-${r.status.toLowerCase()}" onclick='event.stopPropagation(); finalizarCliente("${r.numero}")' style='margin-top:5px;'>✅ Finalizar Cliente</button>
+      <button class="status-${statusLower}" 
+        onclick='event.stopPropagation(); salvarStatus(${r.id})'>💾 Salvar</button>
 
-      <div style='white-space: pre-wrap; margin-top:10px;'>${r.formulario||""}</div>
+      <button onclick='event.stopPropagation(); apagarRegistro(${r.id})'
+        style='background:#dc2626;'>🗑</button>      
+
+      <button class="status-${statusLower}" 
+        onclick='event.stopPropagation(); finalizarCliente("${r.numero}")'
+        style='margin-top:5px;'>✅ Finalizar Cliente</button>
+
+      <div style='white-space: pre-wrap; margin-top:30px;'>${r.formulario||""}</div>
     `;
+
     cardsContainer.appendChild(div);
     setTimeout(()=>div.classList.add("show"), idx*30);
   });
