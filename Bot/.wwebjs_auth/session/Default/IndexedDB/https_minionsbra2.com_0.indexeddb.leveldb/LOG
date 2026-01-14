@@ -1,0 +1,6 @@
+2026/01/11-16:28:56.294 b298 Creating DB C:\BOTWPP\bot\.wwebjs_auth\session\Default\IndexedDB\https_minionsbra2.com_0.indexeddb.leveldb since it was missing.
+2026/01/11-16:28:56.298 b298 Reusing MANIFEST C:\BOTWPP\bot\.wwebjs_auth\session\Default\IndexedDB\https_minionsbra2.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/01/11-16:28:59.903 27f8 Level-0 table #5: started
+2026/01/11-16:28:59.904 27f8 Level-0 table #5: 2377 bytes OK
+2026/01/11-16:28:59.905 27f8 Delete type=0 #3
+2026/01/11-16:28:59.905 27f8 Manual compaction at level-0 from (begin) .. (end); will stop at (end)

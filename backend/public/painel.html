@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CPA ALEXANDRE</title>
+<style>
+  /* Reset e estilo do painel */
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body { font-family:'Segoe UI', Tahoma, Geneva, Verdana,sans-serif; background:#0d1117; color:#e5e7eb; line-height:1.5; }
+  header { background:linear-gradient(90deg,#1f2937,#111827); padding:18px 30px; display:flex; justify-content:space-between; align-items:center; font-size:1.5rem; font-weight:600; box-shadow:0 4px 12px rgba(0,0,0,0.6); border-bottom:1px solid #1f2937; }
+  .buttons { margin:25px 0; display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+  button { padding:10px 18px; border:none; border-radius:10px; cursor:pointer; background:linear-gradient(145deg,#1e293b,#111827); color:#e5e7eb; font-weight:500; transition: all 0.3s ease; box-shadow:0 3px 6px rgba(0,0,0,0.4); }
+  button:hover { opacity:0.85; }
+  button.active { background:#2563eb; box-shadow:0 6px 12px rgba(37,99,235,0.5); }
+  #backBtn { display:none; }
+  #cardsContainer { max-height:70vh; overflow-y:auto; padding-right:5px; }
+  #cardsContainer::-webkit-scrollbar { width:6px; }
+  #cardsContainer::-webkit-scrollbar-thumb { background:#3b82f6; border-radius:3px; }
+  .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:18px; }
+  .card { background:#111827; padding:20px; border-radius:14px; box-shadow:0 4px 16px rgba(0,0,0,0.6); cursor:pointer; transition: transform 0.3s, box-shadow 0.3s, opacity 0.3s; opacity:0; }
+  .card.show { opacity:1; }
+  .card:hover { transform:scale(1.04); box-shadow:0 8px 20px rgba(59,130,246,0.5); }
+  .status-text { font-weight:600; }
+  .card.status-pendente { border-left:5px solid #f59e0b; }
+  .card.status-confirmado { border-left:5px solid #3b82f6; }
+  .card.status-finalizado { border-left:5px solid #10b981; }
+  button.status-pendente { background:#f59e0b; color:white; }
+  button.status-confirmado { background:#3b82f6; color:white; }
+  button.status-finalizado { background:#10b981; color:white; }
+  .buttons input#searchInput { min-width:200px; padding:10px 12px; border-radius:8px; border:none; outline:none; background:#2b2b3c; color:white; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>📊 CPA ALEXANDRE</div>
+  <button onclick="logout()" style="background:#ef4444;">Sair</button>
+</header>
+
+<div class="panel-container" id="panelContainer">
+  <div class="buttons">
+    <button onclick="abrirNovoRegistro()" style="background:#10b981; color:white;">➕ Novo Registro</button>
+    <button onclick="filterStatus('todos', this)" class="active">Todos</button>
+    <button onclick="filterStatus('pendente', this)">Pendentes</button>
+    <button onclick="filterStatus('confirmado', this)">Confirmado</button>
+    <button onclick="filterStatus('finalizado', this)">Finalizado</button>
+    <button onclick="limparRegistros()" style="background:#7f1d1d;">🗑 Apagar todos</button>
+    <button id="backBtn" onclick="showAll()">Voltar</button>
+    <input type="text" id="searchInput" placeholder="Buscar por nome ou número" oninput="searchRecords()">
+  </div>
+
+  <div id="cardsContainer" class="cards-grid"></div>
+</div>
+
+<!-- Modal Novo Registro -->
+<div id="novoRegistroModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); display:flex; justify-content:center; align-items:center; z-index:9999;">
+  <div style="background:#1f1f2e; padding:30px 25px; border-radius:16px; width:90%; max-width:500px; color:white; position:relative;">
+    <h2 style="margin-bottom:20px; text-align:center;">➕ Novo Registro</h2>
+    <label>Nome:</label><input type="text" id="novoNome" style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px; background:#2b2b3c; color:white;">
+    <label>Número:</label><input type="text" id="novoNumero" style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px; background:#2b2b3c; color:white;">
+    <label>Formulário:</label><textarea id="novoFormulario" style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px; background:#2b2b3c; color:white; min-height:80px;"></textarea>
+    <label>Status:</label>
+    <select id="novoStatus" style="width:100%; padding:10px; margin-bottom:20px; border-radius:8px; background:#2b2b3c; color:white;">
+      <option value="PENDENTE">PENDENTE</option>
+      <option value="CONFIRMADO">CONFIRMADO</option>
+      <option value="FINALIZADO">FINALIZADO</option>
+    </select>
+
+    <div style="display:flex; gap:10px;">
+      <button onclick="criarNovoRegistro()" style="flex:1; background:#10b981; color:white;">💾 Salvar</button>
+      <button onclick="fecharNovoRegistro()" style="flex:1; background:#ef4444; color:white;">Fechar</button>
+    </div>
+    <span onclick="fecharNovoRegistro()" style="position:absolute; top:12px; right:15px; cursor:pointer; color:#bbb;">✖</span>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+if(localStorage.getItem("logado")!=="true"){ window.location.href="/login.html"; }
+
+let registros=[], registroAtual=null, abaAtual="todos";
+const cardsContainer = document.getElementById("cardsContainer");
+const backBtn = document.getElementById("backBtn");
+
+function logout(){ localStorage.removeItem("logado"); window.location.href="/login.html"; }
+window.addEventListener("load",()=>document.getElementById("novoRegistroModal").style.display="none");
+
+// --- FUNÇÕES DE NORMALIZAÇÃO E ENVIO ---
+function normalizeNumero(num){
+  return num.replace("@c.us","").trim();
+}
+
+async function enviarFormulario(numero){
+  const registro = registros.find(r => normalizeNumero(r.numero) === normalizeNumero(numero));
+  if(!registro){
+    alert("❌ Registro não encontrado ou já foi apagado");
+    return;
+  }
+
+  const numeroFinal = normalizeNumero(registro.numero);
+
+  const mensagem = `📋 FORMULÁRIO\n\n${registro.formulario || "Sem informações"}`;
+
+  try{
+    await axios.post("/enviar-formulario", {
+      numero: numeroFinal,
+      mensagem
+    });
+
+    console.log("✅ Formulário enviado para o WhatsApp");
+  }catch(err){
+    console.error("❌ Erro ao enviar formulário:", err);
+    alert("Erro ao enviar formulário no WhatsApp");
+  }
+}
+
+// --- FUNÇÃO FINALIZAR CLIENTE ---
+async function finalizarCliente(numero, status="FINALIZADO"){
+  const registro = registros.find(r => normalizeNumero(r.numero) === normalizeNumero(numero));
+  if(!registro){
+    alert("❌ Registro não encontrado ou já foi apagado");
+    return;
+  }
+
+  try{
+    // Atualiza status no servidor
+    await axios.post("http://localhost:3200/atualizar-status-numero",{ numero, status });
+
+    // Envia formulário
+    await enviarFormulario(numero);
+
+    alert(`✅ Status atualizado e formulário enviado para ${numero}`);
+
+    // Atualiza visual do card
+    registro.status = status;
+    reaplicarFiltroAtual();
+    const div = document.getElementById("registro-"+registro.id);
+    div.classList.remove("status-pendente","status-confirmado","status-finalizado");
+    div.classList.add("status-"+status.toLowerCase());
+  }catch(err){
+    console.error(err);
+    alert("Erro ao finalizar cliente ou enviar formulário");
+  }
+}
+
+// --- FUNÇÕES DE REGISTRO ---
+function abrirDetalhes(id){ localStorage.setItem("registroDetalheId",id); window.location.href="/detalhes.html"; }
+function abrirNovoRegistro(){ document.getElementById("novoRegistroModal").style.display="flex"; }
+function fecharNovoRegistro(){ document.getElementById("novoRegistroModal").style.display="none"; }
+
+function criarNovoRegistro(){
+  const nome=document.getElementById("novoNome").value.trim();
+  const numero=document.getElementById("novoNumero").value.trim();
+  const formulario=document.getElementById("novoFormulario").value.trim();
+  const status=document.getElementById("novoStatus").value;
+  if(!nome||!numero){ alert("Preencha nome e número"); return; }
+  const novoRegistro={ id: Date.now(), nome, numero, formulario, status, data:new Date() };
+  fetch("/criar-registro",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(novoRegistro)})
+    .then(r=>r.json()).then(d=>{ if(!d.ok) alert("Erro ao salvar") }).catch(()=>alert("Erro de conexão"));
+  fecharNovoRegistro();
+}
+
+// --- FUNÇÕES AUXILIARES ---
+function renderCards(list){
+  cardsContainer.innerHTML="";
+  list.forEach((r,idx)=>{
+    const div=document.createElement("div");
+    div.className="card status-"+r.status.toLowerCase();
+    div.id="registro-"+r.id;
+    div.onclick=()=> abrirDetalhes(r.id);
+    const lucroTotal = (r.planilha || []).reduce((sum, l) => sum + ((l.saque || 0) - (l.deposito || 0)), 0);
+
+    div.innerHTML=`
+      <b>Nome:</b> ${r.nome}<br>
+      <b>Número:</b> ${r.numero}<br>
+      <b>Status:</b> <span class='status-text'>${r.status}</span><br>
+      <b>Data:</b> ${new Date(r.data).toLocaleString("pt-BR")}<br><br>
+      <b>Lucro Total:</b> ${lucroTotal}<br><br>
+      <select id='select-${r.id}' class="status-${r.status.toLowerCase()}" onclick='event.stopPropagation()'>
+        <option value='PENDENTE' ${r.status==='PENDENTE'?'selected':''}>PENDENTE</option>
+        <option value='CONFIRMADO' ${r.status==='CONFIRMADO'?'selected':''}>CONFIRMADO</option>
+        <option value='FINALIZADO' ${r.status==='FINALIZADO'?'selected':''}>FINALIZADO</option>
+      </select>
+
+      <button class="status-${r.status.toLowerCase()}" onclick='event.stopPropagation(); salvarStatus(${r.id})'>💾 Salvar</button>
+      <button onclick='event.stopPropagation(); apagarRegistro(${r.id})' style='background:#dc2626;'>🗑</button>
+      <button onclick='event.stopPropagation(); notificar(${r.id})'>🔔 Notificar</button>
+      
+      <button class="status-${r.status.toLowerCase()}" onclick='event.stopPropagation(); finalizarCliente("${r.numero}")' style='margin-top:5px;'>✅ Finalizar Cliente</button>
+
+      <div style='white-space: pre-wrap; margin-top:10px;'>${r.formulario||""}</div>
+    `;
+    cardsContainer.appendChild(div);
+    setTimeout(()=>div.classList.add("show"), idx*30);
+  });
+}
+
+// --- SOCKET.IO ---
+const socket=io();
+socket.on("update",data=>{ registros=data; reaplicarFiltroAtual(); });
+socket.on("novo-registro",r=>{ registros.push(r); reaplicarFiltroAtual(); });
+socket.on("atualizacao-status",r=>{ const i=registros.findIndex(x=>x.id==r.id); if(i!=-1){ registros[i]=r; reaplicarFiltroAtual(); } });
+
+// --- MAIS FUNÇÕES ---
+function salvarStatus(id){ const s=document.getElementById("select-"+id).value; fetch("/atualizar-status",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,status:s})}).then(r=>r.json()).then(d=>{ if(d.ok){ const reg=registros.find(r=>r.id==id); if(reg) reg.status=s; reaplicarFiltroAtual(); } }).catch(console.error); }
+function notificar(id){ alert("Notificação enviada para "+id); }
+
+function apagarRegistro(id){
+  if(!confirm("Deseja apagar este registro?")) return;
+
+  fetch("/apagar-registro", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({id})
+  })
+  .then(r => r.json())
+  .then(d => {
+    if(d.ok){
+      registros = registros.filter(r => r.id != id);
+      reaplicarFiltroAtual();
+    } else alert("Erro ao apagar");
+  })
+  .catch(() => alert("Erro de conexão"));
+}
+function filterStatus(status, btn){
+    if(status === "todos") return showAll();
+    abaAtual = status;
+    const f = registros.filter(r => r.status.toLowerCase() === status.toLowerCase());
+    renderCards(f);
+    backBtn.style.display = "inline-block";
+    document.querySelectorAll(".buttons button").forEach(b=>b.classList.remove("active"));
+    if(btn) btn.classList.add("active");
+}
+
+function showAll(){
+    abaAtual = "todos";
+    renderCards(registros);
+    backBtn.style.display = "none";
+    document.querySelectorAll(".buttons button").forEach(b => b.classList.remove("active"));
+    document.querySelector(".buttons button.active")?.classList.remove("active");
+    document.querySelector(".buttons button[onclick*='todos']").classList.add("active");
+}
+function searchRecords(){ const q=document.getElementById("searchInput").value.toLowerCase(); renderCards(registros.filter(r=>r.nome.toLowerCase().includes(q)||r.numero.includes(q))); }
+function reaplicarFiltroAtual(){ if(abaAtual==="todos") renderCards(registros); else renderCards(registros.filter(r=>r.status.toLowerCase()===abaAtual.toLowerCase())); }
+</script>
+</body>
+</html>
