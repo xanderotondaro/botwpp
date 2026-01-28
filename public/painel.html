@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CPA ALEXANDRE</title>
+<style>
+/* RESET */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-main: #070b12;
+  --bg-card: #0d1422;
+  --bg-header: linear-gradient(90deg,#0f172a,#020617);
+  --neon-blue: #3b82f6;
+  --neon-gold: #facc15;
+  --neon-green: #22c55e;
+  --neon-red: #ef4444;
+  --text-main: #e5e7eb;
+  --text-muted: #9ca3af;
+}
+
+/* BODY */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background:
+    radial-gradient(circle at top, rgba(250,204,21,0.06), transparent 40%),
+    radial-gradient(circle at bottom, rgba(59,130,246,0.08), transparent 40%),
+    var(--bg-main);
+  color: var(--text-main);
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* HEADER */
+header {
+  background: var(--bg-header);
+  padding: 18px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.8);
+  border-bottom: 1px solid rgba(250,204,21,0.2);
+}
+
+header span, header h1 {
+  color: var(--neon-gold);
+  text-shadow: 0 0 12px rgba(250,204,21,0.4);
+}
+
+
+
+
+.card-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  align-items: stretch;
+  justify-items: stretch;
+}
+.card-btns button, .card-btns .btn-azul, .card-btns .btn-verde, .card-btns .btn-vermelho, .card-btns .btn-amarelo {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  height: auto;
+  min-width: 0;
+  background: #23233a;
+  color: #fff;
+  box-shadow: none;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.18s, color 0.18s;
+  margin: 0;
+  justify-content: flex-start;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+}
+
+.btn-azul { color: #3b82f6; }
+.btn-verde { color: #10b981; }
+.btn-vermelho { color: #ef4444; }
+.btn-amarelo { color: #facc15; }
+.card-btns button:hover, .btn-azul:hover, .btn-verde:hover, .btn-vermelho:hover, .btn-amarelo:hover {
+  border-color: #facc15;
+  background: #23233a;
+  color: #fff;
+}
+.card-btns button span.icone {
+  font-size: 1.13em;
+  margin-right: 3px;
+  display: flex;
+  align-items: center;
+}
+@media (max-width: 600px) {
+  .card-btns {
+    gap: 5px;
+    margin-top: 6px;
+    margin-bottom: 3px;
+  }
+  .card-btns button, .card-btns .btn-azul, .card-btns .btn-verde, .card-btns .btn-vermelho, .card-btns .btn-amarelo {
+    min-width: 80px;
+    height: 32px;
+    font-size: 0.93rem;
+    padding: 0 7px;
+  }
+}
+/* BUTTONS */
+.buttons {
+  margin: 10px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+button {
+  padding: 5px 9px;
+  border: 1px solid rgba(250,204,21,0.25);
+  border-radius: 15px;
+  cursor: pointer;
+  background: linear-gradient(145deg,#0b1220,#020617);
+  color: var(--text-main);
+  font-weight: 600;
+  letter-spacing: .3px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.7);
+  position: relative;
+  overflow: hidden;
+}
+
+button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent, rgba(250,204,21,0.15), transparent);
+  opacity: 0;
+  transition: opacity .3s;
+}
+
+button:hover::after {
+  opacity: 1;
+}
+
+button:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(250,204,21,0.25);
+}
+
+button.active {
+  background: linear-gradient(145deg,#facc15,#ca8a04);
+  color: #1c1917;
+  border: none;
+  box-shadow: 0 0 18px rgba(250,204,21,0.6);
+}
+
+/* SEARCH */
+.buttons input#searchInput {
+  min-width: 100px;
+  padding: 5px 7px;
+  border-radius: 10px;
+  border: 1px solid rgba(250,204,21,0.25);
+  outline: none;
+  background: #020617;
+  color: var(--text-main);
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+}
+
+.buttons input#searchInput:focus {
+  border-color: var(--neon-gold);
+  box-shadow: 0 0 12px rgba(250,204,21,0.4);
+}
+
+/* CONTAINER */
+#backBtn {
+  display: none;
+}
+
+#cardsContainer {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 10px;
+  scroll-behavior: smooth;
+}
+
+#cardsContainer::-webkit-scrollbar {
+  width: 10px;
+}
+
+#cardsContainer::-webkit-scrollbar-track {
+  background: #020617;
+}
+
+#cardsContainer::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg,#facc15,#3b82f6);
+  border-radius: 10px;
+}
+
+/* GRID */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(260px,1fr));
+  gap: 20px;
+}
+
+/* CARD */
+.card {
+  background: linear-gradient(160deg,#0b1220,#020617);
+  padding: 20px;
+  border-radius: 18px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.8);
+  cursor: pointer;
+  transition: transform .3s, box-shadow .3s, opacity .4s;
+  opacity: 0;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(250,204,21,0.15);
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(250,204,21,0.12), transparent 45%);
+  pointer-events: none;
+}
+.status-pendente { border-color: #facc15; }
+.status-confirmado { border-color: #3b82f6; }
+.status-finalizado { border-color: #22c55e; }
+
+.card.show {
+  opacity: 1;
+}
+
+.card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 20px 40px rgba(250,204,21,0.25);
+}
+
+/* STATUS */
+.status-text {
+  font-weight: 700;
+  letter-spacing: .4px;
+}
+.status-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding: 5px 15px 3px 4px;
+  border-radius: 14px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  cursor: pointer;
+  outline: none;
+  border: 1px solid rgba(250,204,21,.35);
+  background: linear-gradient(145deg,#0b1220,#020617);
+  color: var(--text-main);
+  box-shadow:
+    inset 0 0 10px rgba(0,0,0,.8),
+    0 0 14px rgba(250,204,21,.25);
+  transition: all .25s ease;
+}
+
+/* seta custom dourada */
+.status-select {
+  background-image:
+    linear-gradient(145deg,#0b1220,#020617),
+    url("data:image/svg+xml;utf8,<svg fill='gold' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: 0 0, right 10px center;
+  background-size: 100%, 18px;
+}
+
+/* hover / focus */
+.status-select:hover {
+  transform: scale(1.05);
+  background-color: #020617;
+  box-shadow:
+    0 0 18px rgba(250,204,21,.5),
+    inset 0 0 5px rgba(0,0,0,.9);
+}
+
+.status-select:focus {
+  background:
+    linear-gradient(145deg,#111827,#020617);
+  border-color: #facc15;
+  box-shadow:
+    0 0 35px rgba(250,204,21,.9),
+    inset 0 0 18px rgba(250,204,21,.35);
+  color: #eb0909;
+}
+
+/* cores por status */
+.status-select.pendente:focus {
+  box-shadow:
+    inset 0 0 20px rgba(250,204,21,.45),
+    0 0 30px rgba(250,204,21,.8);
+}
+
+.status-select.confirmado:focus {
+  background:
+    radial-gradient(circle at top, rgba(59,130,246,0.25), transparent 55%),
+    linear-gradient(145deg,#0b1220,#020617);
+  border-color: var(--neon-blue);
+  box-shadow:
+    inset 0 0 20px rgba(59,130,246,.45),
+    0 0 30px rgba(59,130,246,.85);
+}
+
+.status-select.finalizado:focus {
+  background:
+    radial-gradient(circle at top, rgba(34,197,94,0.25), transparent 55%),
+    linear-gradient(145deg,#0b2012,#020617);
+  border-color: var(--neon-green);
+  box-shadow:
+    inset 0 0 20px rgba(34,197,94,.45),
+    0 0 30px rgba(34,197,94,.85);
+}
+
+/* RESPONSIVO */
+@media (max-width: 600px) {
+  header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .buttons {
+    justify-content: center;
+  }
+  
+  
+}
+</style>
+</head>
+<body>
+  
+
+<header>
+  <div id="painelTitulo">📊 CPA</div>
+  <button id="adminBtn" onclick="location.href='/admin'" style="display:none;">
+    ⚙️ ADMIN
+  </button>
+  <button onclick="logout()" style="background:#ef4444;">Sair</button>
+</header>
+ 
+<div class="panel-container" id="panelContainer">
+  <div class="buttons">
+    <button onclick="abrirNovoRegistro()" style="background:#10b981; color:white;">➕ Novo Registro</button>
+    <button id="btnTodos" onclick="filterStatus('todos', this)" class="active">Todos</button>
+    <button onclick="filterStatus('pendente', this)">Pendentes</button>
+    <button onclick="filterStatus('confirmado', this)">Confirmado</button>
+    <button onclick="filterStatus('finalizado', this)">Finalizado</button>
+    <button onclick="limparRegistros()" style="background:#7f1d1d;">🗑 Apagar todos</button>
+    <button id="backBtn" onclick="showAll()">Voltar</button>
+    <input type="text" id="searchInput" placeholder="Buscar por nome ou número" oninput="searchRecords()">
+  </div>
+
+  <div id="cardsContainer" class="cards-grid"></div>
+</div>
+
+<!-- Modal Novo Registro -->
+<div id="novoRegistroModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); justify-content:center; align-items:center; z-index:9999;">
+  <div style="background:#1f1f2e; padding:30px 25px; border-radius:16px; width:90%; max-width:500px; color:white; position:relative;">
+    <h2 style="margin-bottom:20px; text-align:center;">➕ Novo Registro</h2>
+    <label>Nome:</label><input type="text" id="novoNome" style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px; background:#2b2b3c; color:white;">
+    <label>Número:</label><input type="text" id="novoNumero" style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px; background:#2b2b3c; color:white;">
+    <label>Formulário:</label><textarea id="novoFormulario" style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px; background:#2b2b3c; color:white; min-height:80px;"></textarea>
+    <label>Status:</label>
+    <select id="novoStatus" style="width:100%; padding:10px; margin-bottom:20px; border-radius:8px; background:#2b2b3c; color:white;">
+      <option value="PENDENTE">PENDENTE</option>
+      <option value="CONFIRMADO">CONFIRMADO</option>
+      <option value="FINALIZADO">FINALIZADO</option>
+    </select>
+
+    <div style="display:flex; gap:10px;">
+      <button onclick="criarNovoRegistro()" style="flex:1; background:#10b981; color:white;">💾 Salvar</button>
+      <button onclick="fecharNovoRegistro()" style="flex:1; background:#ef4444; color:white;">Fechar</button>
+    </div>
+    <span onclick="fecharNovoRegistro()" style="position:absolute; top:12px; right:15px; cursor:pointer; color:#bbb;">✖</span>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="exportPlanilha.js"></script>
+<script>
+
+const user = JSON.parse(localStorage.getItem("user"));
+
+// Atualiza o título do painel com o nome do usuário
+if(user && user.usuario){
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('painelTitulo').textContent = `📊 CPA ${user.usuario}`;
+  });
+}
+
+if(!user){
+  window.location.href = "/login.html";
+}
+
+if(user.nivel === "admin"){
+  document.getElementById("adminBtn").style.display = "block";
+}
+
+
+let registros=[], registroAtual=null, abaAtual="todos";
+const cardsContainer = document.getElementById("cardsContainer");
+const backBtn = document.getElementById("backBtn");
+
+function logout(){ 
+  localStorage.removeItem("user"); 
+  window.location.href="/login.html"; 
+}
+window.addEventListener("load",()=>document.getElementById("novoRegistroModal").style.display="none");
+
+// --- FUNÇÕES DE NORMALIZAÇÃO E ENVIO ---
+function normalizeNumero(num){
+  return num.replace("@c.us","").trim();
+}
+
+
+async function enviarFormulario(numero){
+  const registro = registros.find(r => normalizeNumero(r.numero) === normalizeNumero(numero));
+  if(!registro){
+    alert("❌ Registro não encontrado ou já foi apagado");
+    return;
+  }
+
+  const numeroFinal = normalizeNumero(registro.numero);
+
+  const mensagem = `📋 FORMULÁRIO\n\n${registro.formulario || "Sem informações"}`;
+
+  try{
+    await axios.post("/enviar-formulario", {
+      numero: numeroFinal,
+      mensagem
+    });
+
+    console.log("✅ Formulário enviado para o WhatsApp");
+  }catch(err){
+    console.error("❌ Erro ao enviar formulário:", err);
+    alert("Erro ao enviar formulário no WhatsApp");
+  }
+}
+
+// --- FUNÇÃO FINALIZAR CLIENTE ---
+// async function finalizarCliente(numero, status="FINALIZADO"){
+//   const registro = registros.find(r => normalizeNumero(r.numero) === normalizeNumero(numero));
+//   if(!registro){
+//     alert("❌ Registro não encontrado ou já foi apagado");
+//     return;
+//   }
+
+//   try{
+//     // Atualiza status no servidor
+//     await axios.post("/atualizar-status-numero",{ numero, status });
+
+//     // Envia formulário
+//     await enviarFormulario(numero);
+
+//     alert(`✅ Status atualizado e formulário enviado para ${numero}`);
+
+//     // Atualiza visual do card
+//     registro.status = status;
+//     reaplicarFiltroAtual();
+//     const div = document.getElementById("registro-"+registro.id);
+//     div.classList.remove("status-pendente","status-confirmado","status-finalizado");
+//     div.classList.add("status-"+status.toLowerCase());
+//   }catch(err){
+//     console.error(err);
+//     alert("Erro ao finalizar cliente ou enviar formulário");
+//   }
+// }
+
+async function carregarRegistros(){
+  const res = await fetch(`/registros?usuario=${user.usuario}&nivel=${user.nivel}`);
+  registros = await res.json();
+  renderCards(registros);
+}
+
+
+carregarRegistros();
+// --- FUNÇÕES DE REGISTRO ---
+function abrirNovoRegistro(){ document.getElementById("novoRegistroModal").style.display="flex"; }
+function fecharNovoRegistro(){ document.getElementById("novoRegistroModal").style.display="none"; }
+
+async function criarNovoRegistro(){
+  const nome = document.getElementById("novoNome").value.trim();
+  const numero = document.getElementById("novoNumero").value.trim();
+  const formulario = document.getElementById("novoFormulario").value.trim();
+  const status = document.getElementById("novoStatus").value;
+
+  if(!nome || !numero){
+    alert("Preencha nome e número");
+    return;
+  }
+
+  try{
+    const res = await fetch("/novo-registro",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        nome,
+        numero,
+        formulario,
+        status,
+        cpa: user.usuario // 👈 dono do lead
+      })
+    });
+
+    const data = await res.json();
+    if(!data.ok) throw new Error();
+
+    fecharNovoRegistro();
+
+  }catch(err){
+    alert("Erro ao criar registro");
+  }
+}
+  
+// --- FUNÇÕES AUXILIARES ---
+function renderCards(list){
+  cardsContainer.innerHTML="";
+  list.forEach((r,idx)=>{
+    const div=document.createElement("div");
+    div.className="card status-"+r.status.toLowerCase();
+    div.id="registro-"+r.id;
+    div.onclick = function(e) {
+      // Só navega se não for um botão
+      if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'SELECT') {
+        window.location.href = '/detalhes.html?id=' + r.id;
+      }
+    };
+    const lucroTotal = (r.planilha || [])
+      .reduce((sum, l) => sum + ((l.saque || 0) - (l.deposito || 0)), 0);
+    const statusLower = r.status.toLowerCase();
+    div.innerHTML=`
+      <b>Nome:</b> ${r.nome}<br>
+      <b>Número:</b> ${r.numero}<br>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:2px;">
+        <b>Status:</b>
+        <select id="select-${r.id}" class="status-select ${statusLower}" data-id="${r.id}" onclick="event.stopPropagation()" style="width:auto;min-width:0;height:auto;margin:0 0 0 6px;background:#23233a;color:#fff;border:1.2px solid #23233a;font-size:1rem;text-align:left;border-radius:6px;box-shadow:none;padding:2px 8px;">
+          <option value="PENDENTE" ${r.status==="PENDENTE"?"selected":""}>🕒 PENDENTE</option>
+          <option value="CONFIRMADO" ${r.status==="CONFIRMADO"?"selected":""}>✅ CONFIRMADO</option>
+          <option value="FINALIZADO" ${r.status==="FINALIZADO"?"selected":""}>🏁 FINALIZADO</option>
+        </select>
+      </div>
+      <b>Data:</b> ${new Date(r.data).toLocaleString("pt-BR")}<br><br>
+      <b>Lucro Total:</b> ${lucroTotal}<br><br>
+      <div style='white-space: pre-wrap; margin-top:30px;'>${r.formulario||""}</div>
+      <div class="card-btns-grid">
+        <button class="btn-verde" title="Salvar status" onclick='event.stopPropagation(); salvarStatus(${r.id})'><span class="icone">💾</span>Salvar</button>
+        <button class="btn-vermelho" title="Apagar registro" onclick='event.stopPropagation(); apagarRegistro(${r.id})'><span class="icone">🗑</span>Apagar</button>
+      </div>
+    `;
+    cardsContainer.appendChild(div);
+    setTimeout(()=>div.classList.add("show"), idx*30);
+  });
+}
+
+// --- SOCKET.IO ---
+const socket = io();
+
+socket.on("update", data => {
+  if(user.nivel === "admin"){
+    registros = data;
+  } else {
+    registros = data.filter(r => r.cpa === user.usuario);
+  }
+  reaplicarFiltroAtual();
+});
+
+socket.on("novo-registro", r => {
+  if(user.nivel === "admin" || r.cpa === user.usuario){
+    registros.push(r);
+    reaplicarFiltroAtual();
+  }
+});
+
+// --- MAIS FUNÇÕES ---
+function limparRegistros(){
+  if(!confirm("Deseja apagar TODOS os registros?")) return;
+
+  fetch("/limpar-registros", { method:"POST" })
+  .then(r => r.json())
+  .then(d => {
+    if(d.ok){
+      registros = [];
+      renderCards([]);
+    } else alert("Erro ao apagar todos");
+  })
+  .catch(()=> alert("Erro de conexão"));
+}
+function salvarStatus(id) {
+  const select = document.getElementById("select-" + id);
+  if (!select) return;
+  const status = select.value;
+  const registro = registros.find(r => r.id == id);
+  if (!registro) return;
+  fetch("/atualizar-status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, status })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (!data.ok) {
+      alert("❌ Erro ao salvar status");
+    } else {
+      // Atualiza o status local e o card imediatamente
+      registro.status = status;
+      const div = document.getElementById("registro-"+registro.id);
+      if(div) {
+        div.classList.remove("status-pendente","status-confirmado","status-finalizado");
+        div.classList.add("status-"+status.toLowerCase());
+        // Atualiza o valor do select visualmente
+        select.value = status;
+      }
+    }
+  })
+  .catch(() => alert("❌ Erro ao salvar status"));
+}
+function notificar(id){ alert("Notificação enviada para "+id); }
+
+function apagarRegistro(id){
+  if(!confirm("Deseja apagar este registro?")) return;
+
+  fetch("/apagar-registro", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({id})
+  })
+  .then(r => r.json())
+  .then(d => {
+    if(d.ok){
+      registros = registros.filter(r => r.id != id);
+      reaplicarFiltroAtual();
+    } else alert("Erro ao apagar");
+  })
+  .catch(() => alert("Erro de conexão"));
+}
+function filterStatus(status, btn){
+    if(status === "todos") return showAll();
+    abaAtual = status;
+    const f = registros.filter(r => r.status.toLowerCase() === status.toLowerCase());
+    renderCards(f);
+    backBtn.style.display = "inline-block";
+    document.querySelectorAll(".buttons button").forEach(b=>b.classList.remove("active"));
+    if(btn) btn.classList.add("active");
+}
+
+function showAll(){
+    abaAtual = "todos";
+    renderCards(registros);
+    backBtn.style.display = "none";
+    document.querySelectorAll(".buttons button").forEach(b => b.classList.remove("active"));
+    document.querySelector(".buttons button.active")?.classList.remove("active");
+    document.getElementById("btnTodos").classList.add("active");
+}
+
+function searchRecords(){ const q=document.getElementById("searchInput").value.toLowerCase(); renderCards(registros.filter(r=>r.nome.toLowerCase().includes(q)||r.numero.includes(q))); }
+function reaplicarFiltroAtual(){ if(abaAtual==="todos") renderCards(registros); else renderCards(registros.filter(r=>r.status.toLowerCase()===abaAtual.toLowerCase())); }
+
+</script>
+</body>
+</html>

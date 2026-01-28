@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalhes do Registro</title>
+  <style>
+    body { background: #181826; color: #e5e7eb; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; padding:0; }
+    .container { max-width: 520px; margin: 32px auto; background: #23233a; border-radius: 16px; box-shadow: 0 8px 32px #000a; padding: 32px 24px; }
+    h2 { color: #facc15; text-align: center; margin-bottom: 18px; }
+    .info { margin-bottom: 18px; }
+    .info b { color: #facc15; }
+    .btn { background: #3b82f6; color: #fff; border: none; border-radius: 8px; padding: 8px 22px; font-weight: bold; cursor: pointer; margin: 8px 0; display: inline-block; }
+    .btn:hover { background: #2563eb; }
+    /* Modal */
+    #modalPlanilha { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:99999; }
+    #planilhaContent { background:#181826; padding:32px 24px; border-radius:16px; max-width:520px; width:95%; color:white; position:relative; }
+    table { width:100%; background:#23233a; border-radius:8px; overflow:hidden; margin-bottom:10px; color:white; }
+    th, td { padding:6px 8px; text-align:center; }
+    th { color:#facc15; background:#23233a; }
+    tr:last-child td { border-bottom:none; }
+    .close-btn { background:#facc15; color:#181826; font-weight:bold; padding:8px 22px; border-radius:8px; border:none; cursor:pointer; margin-bottom:18px; display:block; margin-left:auto; margin-right:auto; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Detalhes do Registro</h2>
+    <div class="info" id="infoRegistro"></div>
+    <button class="btn" onclick="abrirModalPlanilha(event)">📊 Ver Planilha</button>
+    <button class="btn" onclick="window.location.href='painel.html'" style="background:#facc15;color:#181826;margin-left:8px;">⬅️ Voltar para o Início</button>
+  </div>
+  <div id="modalPlanilha" onclick="fecharModalPlanilha(event)">
+    <div id="planilhaContent" onclick="event.stopPropagation();"></div>
+  </div>
+  <script>
+    // Pega o id da URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get("id");
+    let registro = null;
+    // Verifica login igual painel.html
+    const user = JSON.parse(localStorage.getItem("user"));
+    if(!user){
+      window.location.href = "/login.html";
+    }
+    fetch(`/registros?usuario=${user.usuario}&nivel=${user.nivel}`)
+      .then(r => r.json())
+      .then(data => {
+        registro = data.find(r => String(r.id) === String(id));
+        if (!registro) {
+          document.getElementById('infoRegistro').innerHTML = '<b>Registro não encontrado.</b>';
+          return;
+        }
+        document.getElementById('infoRegistro').innerHTML = `
+          <b>Nome:</b> ${registro.nome}<br>
+          <b>Número:</b> ${registro.numero}<br>
+          <b>Status:</b> ${registro.status}<br>
+          <b>Data:</b> ${new Date(registro.data).toLocaleString('pt-BR')}<br><br>
+          <b>Lucro Total:</b> ${(registro.planilha||[]).reduce((sum, l) => sum + ((l.saque || 0) - (l.deposito || 0)), 0)}<br><br>
+          <b>Formulário:</b><br><div style='white-space: pre-wrap; margin-top:10px;'>${registro.formulario||""}</div>
+        `;
+      });
+    function abrirModalPlanilha(event) {
+      if (event) event.stopPropagation();
+      if (!registro) return;
+      let planilhaHtml = '';
+      let totalGeral = 0;
+      if(registro.planilha && registro.planilha.length > 0){
+        planilhaHtml = `<h3 style='margin-top:0;margin-bottom:12px;text-align:center;'>Planilha</h3><table><tr><th>Data</th><th>Depósito</th><th>Saque</th><th>Total</th></tr>`;
+        registro.planilha.forEach(l => {
+          const deposito = Number(l.deposito)||0;
+          const saque = Number(l.saque)||0;
+          const total = saque - deposito;
+          totalGeral += total;
+          planilhaHtml += `<tr><td>${l.data ? new Date(l.data).toLocaleDateString('pt-BR') : ''}</td><td>${deposito}</td><td>${saque}</td><td>${total}</td></tr>`;
+        });
+        planilhaHtml += `<tr style='font-weight:bold;background:#181826;'><td colspan='3' style='text-align:right;color:#facc15;'>Total Geral:</td><td style='color:#facc15;'>${totalGeral}</td></tr>`;
+        planilhaHtml += '</table>';
+      } else {
+        planilhaHtml = `<div style='color:#aaa;margin-top:12px;'>Nenhum lançamento cadastrado para este registro.</div>`;
+      }
+      document.getElementById('planilhaContent').innerHTML = `
+        <button onclick='fecharModalPlanilha(event)' class='close-btn'>⬅️ Voltar</button>
+        ${planilhaHtml}
+      `;
+      document.getElementById('modalPlanilha').style.display = 'flex';
+    }
+    function fecharModalPlanilha(event){
+      if (event) event.stopPropagation();
+      document.getElementById('modalPlanilha').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
