@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CPA ALEXANDRE</title>
+<style>
+/* Fundo animado estilo cassino */
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: 'Arial Black', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background: #131313;
+}
+
+/* Fundo com slideshow das slots */
+.background-slideshow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.background-slideshow img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  animation: slideShow 60s infinite;
+}
+
+.background-slideshow img:nth-child(1) { animation-delay: 0s; }
+.background-slideshow img:nth-child(2) { animation-delay: 1s; }
+.background-slideshow img:nth-child(3) { animation-delay: 2s; }
+
+@keyframes slideShow {
+  0% { opacity: 0; transform: scale(1.1); }
+  8% { opacity: 1; transform: scale(1.0); }
+  33% { opacity: 1; transform: scale(1.0); }
+  41% { opacity: 0; transform: scale(0.9); }
+  100% { opacity: 0; transform: scale(0.9); }
+}
+
+/* Container central neon */
+.login-container {
+  position: relative;
+  background: rgba(0, 0, 0, 0.85);
+  padding: 40px 35px;
+  border-radius: 20px;
+  width: 340px;
+  text-align: center;
+  border: 3px solid #1e90ff;
+  box-shadow: 0 0 20px #1e90ff, 0 0 40px #00bfff, 0 0 60px #4b0082;
+  animation: glowBorder 2s infinite alternate;
+}
+
+@keyframes glowBorder {
+  0% { box-shadow: 0 0 15px #1e90ff, 0 0 30px #00bfff, 0 0 45px #4b0082; }
+  50% { box-shadow: 0 0 25px #00bfff, 0 0 50px #4b0082, 0 0 70px #1e90ff; }
+  100% { box-shadow: 0 0 15px #1e90ff, 0 0 30px #00bfff, 0 0 45px #4b0082; }
+}
+
+/* Título neon */
+.login-container h1 {
+  font-size: 32px;
+  margin-bottom: 25px;
+  color: #1e90ff;
+  text-shadow: 0 0 5px #1e90ff, 0 0 10px #00bfff, 0 0 20px #4b0082;
+  animation: flicker 1.5s infinite;
+}
+
+@keyframes flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+  20%, 22%, 24%, 55% { opacity: 0.4; }
+}
+
+/* Inputs neon menores */
+input {
+  width: 250px;          /* largura menor */
+  padding: 10px;         /* altura menor */
+  margin: 10px 0;
+  border-radius: 10px;
+  border: 2px solid #00bfff;
+  background: #111;
+  color: #fff;
+  font-weight: bold;
+  font-size: 14px;       /* fonte menor */
+  text-align: center;
+  box-shadow: 0 0 5px #00bfff, 0 0 10px #4b0082;
+  transition: all 0.3s ease;
+}
+
+input:focus {
+  border-color: #1e90ff;
+  box-shadow: 0 0 10px #1e90ff, 0 0 20px #00bfff;
+  outline: none;
+}
+
+/* Botão pulsante menor */
+button {
+  width: 250px;             /* mesma largura dos inputs */
+  padding: 10px;            /* altura menor */
+  margin-top: 12px;
+  border: none;
+  border-radius: 12px;      /* borda proporcional */
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;          /* fonte menor */
+  color: #fff;
+  background: linear-gradient(90deg, #00bfff, #1e90ff, #4b0082);
+  background-size: 300% 100%;
+  animation: neonBtn 2s infinite alternate;
+  box-shadow: 0 0 10px #1e90ff, 0 0 20px #00bfff;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+button:hover {
+  box-shadow: 0 0 20px #00ffff, 0 0 40px #1e90ff;
+  transform: scale(1.05);
+}
+
+@keyframes neonBtn {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+</style>
+</head>
+<body>
+
+<div class="background-slideshow">
+  <img src="images/fundo.jpg" alt="Fortune Tiger">
+</div>
+<div class="login-container">
+  <h2 style="color: #00bfff;">Login</h2>
+  
+  <input type="text" id="username" placeholder="Usuário">
+  <input type="password" id="password" placeholder="Senha">
+  <p id="loginError" style="color:red;"></p>
+  <button onclick="login()">Entrar</button>
+</div>
+
+<script>
+  const USER = "admin";
+  const PASS = "1234";
+
+  function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    if(username === USER && password === PASS) {
+      localStorage.setItem("logado", "true");
+      window.location.href = "/painel.html"; // redireciona para o painel
+    } else {
+      document.getElementById("loginError").innerText = "Usuário ou senha incorretos!";
+    }
+  }
+</script>
+</body>
+</html>
